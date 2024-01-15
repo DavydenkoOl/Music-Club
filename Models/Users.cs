@@ -12,5 +12,7 @@
         public string? Password { get; set; }
 
         public string? Salt { get; set; }
+
+        public bool  IsСonfirm { get; set; }
     }
 }

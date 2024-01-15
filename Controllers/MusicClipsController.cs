@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Music_Club.Models;
 using Music_Club.Repository;
@@ -14,10 +15,12 @@ namespace Music_Club.Controllers
     {
         IRepository<MusicClip> _context;
         IWebHostEnvironment _appEnvironment;
-        public MusicClipsController(IRepository<MusicClip> context, IWebHostEnvironment appEnvironment)
+        IRepository<Genre> _context_genre;
+        public MusicClipsController(IRepository<MusicClip> context, IWebHostEnvironment appEnvironment, IRepository<Genre> context_genre)
         {
             _context = context;
             _appEnvironment = appEnvironment;
+            _context_genre = context_genre;
         }
 
         // GET: MusicClips
@@ -45,16 +48,41 @@ namespace Music_Club.Controllers
         //}
 
         // GET: MusicClips/Create
-        public IActionResult Create()
+        public async Task< IActionResult> Create()
         {
-            return View();
+            MusicClipView model = new MusicClipView();
+            model.GenreList = await _context_genre.GetList();
+            return View(model);
         }
         public async Task<IActionResult> SelectedVideo(int id)
         {
             CookieOptions option = new CookieOptions();
             option.Expires = DateTime.Now.AddDays(30);
+            var tmp=await _context.GetList();
+            int selected_index=0;
+            for (int i = 0; i < tmp.Count; i++)
+            { 
+                if (tmp[i].Id == id)
+                    selected_index = i; 
+            }
+            int previous_video, next_video=0;
+            if (selected_index != 0)
+            {
+                previous_video = tmp[selected_index - 1].Id;
+            }
+            else
+            {
+                previous_video = tmp[tmp.Count - 1].Id;
+            }
+            if(selected_index == tmp.Count - 1 )
+            {
+                next_video = tmp[0].Id;
+            }
+            else if(selected_index == 0 &&  tmp.Count == 1) { next_video = id; }
+            else if(selected_index >= 0 && selected_index < tmp.Count - 1) { next_video = tmp[selected_index + 1].Id; }
             Response.Cookies.Append("Selected_video", id.ToString(), option);
-
+            Response.Cookies.Append("previous_video", previous_video.ToString(), option);
+            Response.Cookies.Append("next_video", next_video.ToString(), option);
             return RedirectToAction("Index",await _context.GetList());
         }
         // POST: MusicClips/Create
@@ -62,6 +90,7 @@ namespace Music_Club.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequestSizeLimit(1000000000)]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,ReleaseDate,Artist,Genre,Id_user")] MusicClip musicClip, IFormFile? uploadedFile)
         {
             if (uploadedFile != null)
@@ -84,6 +113,7 @@ namespace Music_Club.Controllers
             }
             if (ModelState.IsValid)
             {
+                musicClip.Genre = musicClip.Genre.Trim();
                 _context.Create(musicClip);
                 await _context.Save();
                 return RedirectToAction(nameof(Index));

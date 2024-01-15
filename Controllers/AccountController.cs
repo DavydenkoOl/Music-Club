@@ -9,27 +9,43 @@ namespace Music_Club.Controllers
     public class AccountController : Controller
     {
         IRepository<Users> _repository;
+        IRepository<MusicClip> _clips;
 
-
-        public AccountController(IRepository<Users> context)
+        public AccountController(IRepository<Users> context, IRepository<MusicClip> clips)
         {
             _repository = context;
+            _clips = clips;
         }
 
+        public async Task<IActionResult> Users()
+        {
+
+            return View(await _repository.GetList());
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UsersConfirm(int id)
+        {
+            var us = await _repository.GetObject(id);
+            if(us!= null)
+            {
+                us.IsСonfirm = true;
+                _repository.Update(us);
+               await _repository.Save();
+                return RedirectToAction(nameof(Users));
+            }
+            return RedirectToAction(nameof(Users));
+        }
         public ActionResult Login()
 
         {
             HttpContext.Session.Clear();
             return View();
         }
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginModel logon)
+        public async Task< IActionResult> Login(LoginModel logon)
         {
 
             if (ModelState.IsValid)
@@ -60,7 +76,11 @@ namespace Music_Club.Controllers
                 StringBuilder hash = new StringBuilder(byteHash.Length);
                 for (int i = 0; i < byteHash.Length; i++)
                     hash.Append(string.Format("{0:X2}", byteHash[i]));
-
+                if (!users.IsСonfirm)
+                {
+                    ModelState.AddModelError("", "Ваша регистрация ещё не подтверждена, попробуйте позже!");
+                    return View(logon);
+                }
                 if (users.Password != hash.ToString())
                 {
                     ModelState.AddModelError("", "Wrong login or password!");
@@ -69,7 +89,11 @@ namespace Music_Club.Controllers
                 HttpContext.Session.SetString("UserID", users.Id.ToString());
                 HttpContext.Session.SetString("FirstName", users.FirstName);
                 HttpContext.Session.SetString("LastName", users.LastName);
-                return View("~/Views/MusicClips/Create.cshtml");
+                HttpContext.Session.SetString("Login", users.Login);
+                //return View("~/Views/MusicClips/Create.cshtml");
+                var clip_models = await _clips.GetList();
+                
+                return View("~/Views/MusicClips/Index.cshtml", clip_models);
             }
             return View(logon);
         }
@@ -89,6 +113,7 @@ namespace Music_Club.Controllers
                 user.FirstName = reg.FirstName;
                 user.LastName = reg.LastName;
                 user.Login = reg.Login;
+                user.IsСonfirm = false;
 
                 byte[] saltbuf = new byte[16];
 

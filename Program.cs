@@ -21,7 +21,7 @@ builder.Services.AddDbContext<MusicClubContext>(options => options.UseSqlServer(
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IRepository<Users>, UserRepository>();
 builder.Services.AddScoped<IRepository<MusicClip>, MusicClipRepository>();
-
+builder.Services.AddScoped<IRepository<Genre>, GenreRepository>();
 
 var app = builder.Build();
 

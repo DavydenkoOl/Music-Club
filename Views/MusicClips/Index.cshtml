@@ -4,28 +4,61 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
     Context.Request.Cookies.TryGetValue("Selected_video", out string? _clipPlay);
+    Context.Request.Cookies.TryGetValue("previous_video", out string? _clip_previous);
+    Context.Request.Cookies.TryGetValue("next_video", out string? _clip_next);
 }
 
 
-<div id="index_body">
-    <div id="index_left" style="width: 15%; height:82vh"></div>
+<div id="index_body" >
+    <div id="index_left" style="width: 15%; height:82vh; padding-top:60px;">
+        @if (Context.Session.GetString("Login") == "admin")
+        {
+            <a asp-action="CreateGenre" asp-controller="Genre" style="text-decoration: none;">
+            <div id="add_genre" style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
+                <img src="/image/add-genre.png"/>
+                <h5 style="color:azure;margin-left:8px">Добавить жанр</h5>
+            </div>
+            </a>
+            <a asp-action="Users" asp-controller="Account" style="text-decoration: none;">
+            <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
+                <img src="/image/users.png" />
+                <h5 style="color:azure;margin-left:8px">Пользователи</h5>
+            </div>
+            </a>
+            <a asp-action="Create" asp-controller="MusicClips" style="text-decoration: none;">
+            <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
+                <img src="/image/addvideo.png"  />
+                <h5 style="color:azure;margin-left:8px">Добавить клип</h5>
+            </div>
+            </a> 
+        }else{
+        <a asp-action="Create" asp-controller="MusicClips" style="text-decoration: none;">
+            <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
+                <img src="/image/addvideo.png" />
+                <h5 style="color:azure;margin-left:8px">Добавить клип</h5>
+            </div>
+        </a>
+        }
+
+    </div>
     <div id="inex_centre" style="width: 65%; height:82vh; border-left:1px solid #B5B8B1;border-right:1px solid #B5B8B1; position: relative;overflow:hidden">
-        <video autoplay muted loop id="video-background" >
+        <video autoplay muted loop id="video-background">
             <source src="/video/video_von_muzportal.mp4" type="video/mp4">
-         </video>
+        </video>
         <div style="width: 60%; height:50vh; border:1px solid #004d47;position: absolute;top: 25%;left: 20%;border-radius:12px;box-shadow: 2px 2px 2px rgba(0,	77,	71, 0.5)">
-            @foreach(var it in Model)
+            @foreach (var it in Model)
             {
                 if (it.Id.ToString() == _clipPlay)
                 {
-                    <video  id="video_player" style="width: 100%; height:100%; border-radius:12px;object-fit: cover;">
+                    <video id="video_player" style="width: 100%; height:100%; border-radius:12px;object-fit: cover;">
                         <source src="/video/@it.Path_Video" type="video/mp4">
                     </video>
-                    
+
                 }
-                
+
+
             }
-            
+
         </div>
     </div>
     <div id="index_right" style="width: 20%; height:82vh;overflow-y: scroll;">
@@ -33,56 +66,57 @@
             <input type="search" class="search-field" placeholder="Поиск...">
             <button type="submit">Поиск</button>
         </div>
-        @{
-            var count = 0;
-        }
-        @if (count < 10)
+
+
+        @foreach (var item in Model)
         {
-            @foreach (var item in Model)
+            if (item.Path_Video != null)
             {
-                if (item.Path_Video != null)
-                {
-                    <a asp-action="SelectedVideo" asp-controller="MusicClips" asp-route-id="@item.Id">
-                        <div class="top_clip" style="position: relative;width:98%; height:180px; border-radius:8px; border:1px solid #B5B8B1; margin:10px auto;  ">
-                            <h6 style="color:azure; position: absolute">@item.Artist - @item.Title</h6>
-                            <video id="videoTop" autoplay muted loop style="width:100%; height: 100%; object-fit: cover;border-radius:8px; z-index: -1000;position: absolute">
-                                <source src="/video/@item.Path_Video" type="video/mp4">
-                            </video>
-                        </div>
-                    </a>
-                    
-                }
-                count++;
+                <a asp-action="SelectedVideo" asp-controller="MusicClips" asp-route-id="@item.Id">
+                    <div class="top_clip" style="position: relative;width:98%; height:180px; border-radius:8px; border:1px solid #B5B8B1; margin:10px auto;  ">
+                        <h6 style="color:azure; position: absolute">@item.Artist - @item.Title</h6>
+                        <video id="videoTop" autoplay muted loop style="width:100%; height: 100%; object-fit: cover;border-radius:8px; z-index: -1000;position: absolute">
+                            <source src="/video/@item.Path_Video" type="video/mp4">
+                        </video>
+                    </div>
+                </a>
+
             }
-            
+
+
         }
 
-        
+
     </div>
 </div>
 <div id="div_footer">
-    <div style="width: 15%; height:12vh;display: flex; justify-content:center;align-items:center;font-size:16px;font-weight:bold">&copy; 2024 - Music_Club</div>
+    <div style="width: 15%; height:12vh;display: flex; justify-content:center;align-items:center;font-size:16px;font-weight:bold;color:#00ff00">&copy; 2024 - Music_Club</div>
     <div style="width: 65%; height:100%; border-left:1px solid #B5B8B1;border-right:1px solid #B5B8B1;">
-        <div id="time_passed" style="width:100%;height:8px;background-color:azure"></div>
+        <div id="time_passed" style="width:100%;height:8px;background-color:azure">
+            <div id="progress_bar" style="width:0;height:8px;background-color:#757272"> </div>
+        </div>
         <div id="player" style="width:100%; height:92%;display:flex">
             <div id="cild_con" style="width:10%;"></div>
-                <div id="cild_con" style="width:50%;display: flex; justify-content:center;align-items:center;">
-                <button style="background: none;border: none;padding: 0;margin: 0;overflow: visible;font: inherit;line-height: normal;cursor: pointer;outline: none;">
-                    <img style="width:25px;height:25px;margin-right:25px" src="/image/previous.png" />
+            <div id="cild_con" style="width:50%;display: flex; justify-content:center;align-items:center;">
+                <form>
+                <button asp-action="SelectedVideo" asp-controller="MusicClips" asp-route-id="@_clip_previous" style="background: none;border: none;padding: 0;margin: 0;overflow: visible;font: inherit;line-height: normal;cursor: pointer;outline: none;">
+                    <img style="width:25px;height:25px;margin-right:25px" src="/image/previous-weis.png" />
                 </button>
-                <div id="player_btn"><img id="playbtnImg" style="width:35px;height:35px;margin-right:25px" src="/image/play-button.png" /></div>
-                <button style="background: none;border: none;padding: 0;margin: 0;overflow: visible;font: inherit;line-height: normal;cursor: pointer;outline: none;">
-                    <img style="width:20px;height:20px;" src="/image/next.png" />
-                 </button>
-                
+                </form>
+                <div id="player_btn"><img id="playbtnImg" style="width:35px;height:35px;margin-right:25px" src="/image/play-weis.png" /></div>
+                <form>
+                <button asp-action="SelectedVideo" asp-controller="MusicClips" asp-route-id="@_clip_next" style="background: none;border: none;padding: 0;margin: 0;overflow: visible;font: inherit;line-height: normal;cursor: pointer;outline: none;">
+                    <img style="width:20px;height:20px;" src="/image/next-weis.png" />
+                </button>
+                </form>
             </div>
             <div id="cild_con" style="width:10%;display: flex; justify-content:center;align-items:center;">
                 <div>
-                    <img style="width:25px;height:25px;" src="/image/sound.png" />
+                    <img id="volum_sound" style="width:25px;height:25px;" src="/image/audio-volume-weis.png" />
                 </div>
-                <input type="range" class="volume-slider"  value="100" id="volumeRange">
+                <input type="range"  value="50" id="volumeRange" style="">
                 <div>
-                    <img style="width:25px;height:25px;margin-right:5px; margin-left:30px" src="/image/download.png" />
+                    <img style="width:25px;height:25px;margin-right:5px; margin-left:30px" src="/image/download-weis.png" />
                 </div>
             </div>
         </div>

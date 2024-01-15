@@ -22,8 +22,8 @@ html {
 }
 
 body {
-     /*margin-bottom: 60px;*/
-   
+    /*margin-bottom: 60px;*/
+    font-family: 'Salsa', cursive;
 }
 #index_body {
     width: 100%;
@@ -78,6 +78,23 @@ body {
     flex-grow: 1;
    /* border:1px solid grey;*/
 }
-.volume-slider::-webkit-slider-thumb {
-    background-color: red;
+
+#volumeRange[type=range]::-webkit-slider-runnable-track
+{
+    border-radius:5px;
+    height:5px;
+    background-color:white;
+}
+#volumeRange[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00ff00;
+    margin-top: -3.5px;
+}
+#volumeRange {
+    -webkit-appearance:none;
+    appearance:none;
+    background:transparent;
 }
