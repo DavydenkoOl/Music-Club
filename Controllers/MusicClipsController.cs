@@ -114,7 +114,7 @@ namespace Music_Club.Controllers
             if (ModelState.IsValid)
             {
                 musicClip.Genre = musicClip.Genre.Trim();
-                _context.Create(musicClip);
+               await _context.Create(musicClip);
                 await _context.Save();
                 return RedirectToAction(nameof(Index));
             }
@@ -172,38 +172,33 @@ namespace Music_Club.Controllers
         //    return View(musicClip);
         //}
 
-        // GET: MusicClips/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+       
+        public async Task<IActionResult> Delete(int? id)
+        {
+            var musicClip = await _context.GetObject(id);
+            if (musicClip != null)
+            {
+                await _context.Delete(id);
+            }
 
-        //    var musicClip = await _context.Clips
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (musicClip == null)
-        //    {
-        //        return NotFound();
-        //    }
+            await _context.Save();
+            return RedirectToAction(nameof(Index));
+        }
 
-        //    return View(musicClip);
-        //}
 
-        // POST: MusicClips/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var musicClip = await _context.Clips.FindAsync(id);
-        //    if (musicClip != null)
-        //    {
-        //        _context.Clips.Remove(musicClip);
-        //    }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var musicClip = await _context.GetObject(id);
+            if (musicClip != null)
+            {
+                await _context.Delete(id);
+            }
 
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
+            await _context.Save();
+            return RedirectToAction(nameof(Index));
+        }
 
         //private bool MusicClipExists(int id)
         //{

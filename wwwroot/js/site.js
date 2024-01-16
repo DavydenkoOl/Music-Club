@@ -61,3 +61,12 @@ for (let it of existing) {
     }
 }
 
+let delClip = document.getElementById("del_clip_a");
+delClip.onclick = () => {
+    delete_clip.style.display = "block";
+}
+let div_btn_del = document.getElementById("div_btn_del");
+div_btn_del.onclick = () => {
+    delete_clip.style.display = "none";
+}
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
 using Music_Club.Models;
 using Music_Club.Repository;
 using System.Security.Cryptography;
@@ -39,10 +40,17 @@ namespace Music_Club.Controllers
         public ActionResult Login()
 
         {
-            HttpContext.Session.Clear();
+            
             return View();
         }
-        
+        public ActionResult LogOut()
+
+        {
+            Response.Cookies.Delete("Login");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task< IActionResult> Login(LoginModel logon)
@@ -50,6 +58,8 @@ namespace Music_Club.Controllers
 
             if (ModelState.IsValid)
             {
+                CookieOptions option = new CookieOptions();
+                option.Expires = DateTime.Now.AddDays(30);
                 if (_repository.GetList().Result.Count == 0)
                 {
                     ModelState.AddModelError("", "Wrong login or password!");
@@ -90,10 +100,15 @@ namespace Music_Club.Controllers
                 HttpContext.Session.SetString("FirstName", users.FirstName);
                 HttpContext.Session.SetString("LastName", users.LastName);
                 HttpContext.Session.SetString("Login", users.Login);
+                
+                Response.Cookies.Append("UserID", users.Id.ToString(), option);
+                Response.Cookies.Append("FirstName", users.FirstName, option);
+                Response.Cookies.Append("LastName", users.LastName, option);
+                Response.Cookies.Append("Login", users.Login, option);
                 //return View("~/Views/MusicClips/Create.cshtml");
                 var clip_models = await _clips.GetList();
                 
-                return View("~/Views/MusicClips/Index.cshtml", clip_models);
+                return RedirectToAction("Index", "MusicClips", clip_models);
             }
             return View(logon);
         }

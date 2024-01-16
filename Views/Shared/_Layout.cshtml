@@ -11,15 +11,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
 </head>
-
+@{
+    Context.Request.Cookies.TryGetValue("FirstName", out string? firstName);
+    Context.Request.Cookies.TryGetValue("LastName", out string? lastName);
+    Context.Request.Cookies.TryGetValue("Login", out string? login);
+}
+           
 <body style="background-color:black/*  #004d47 */; padding-bottom: 0;">
    
     <header>
        
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow" style="margin-bottom:0">
             <div class="container-fluid" >
-                <a class="navbar-brand" asp-area="" asp-controller="MusicClips" asp-action="Index" asp-route-id="@Context.Session.GetString("FirstName")" style="font-size:24px;font-weight:bold;color:#00ff00">MusicClub</a>
-                @if (Context.Session.GetString("FirstName") == null)
+                <a class="navbar-brand" asp-area="" asp-controller="MusicClips" asp-action="Index" asp-route-id="@firstName" style="font-size:24px;font-weight:bold;color:#00ff00">MusicClub</a>
+                @if (firstName == null)
                 {
                     <div style="display: flex;width: 20%">
                         <a class="nav-link " asp-area="" asp-controller="Account" asp-action="Login" style="font-size:18px;font-weight:bold;color:#00ff00">Войти</a>
@@ -32,8 +37,8 @@
                    @*  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="myModal" style="background:none;border:none;">
                         <img src="/image/user.png" />
                     </button> *@
-                    <span class="navbar-brand" style="color:#00ff00"> @Context.Session.GetString("FirstName")  @Context.Session.GetString("LastName")</span>
-                    <a class="navbar-brand" asp-area="" asp-controller="Account" asp-action="Login" style="color:#00ff00">Выйти</a>
+                    <span class="navbar-brand" style="color:#00ff00"> @firstName  @lastName</span>
+                    <a class="navbar-brand" asp-area="" asp-controller="Account" asp-action="LogOut" style="color:#00ff00">Выйти</a>
                     @* <div class="modal" id="myModal">
                         <div class="modal-dialog">
                             <div class="modal-content">
