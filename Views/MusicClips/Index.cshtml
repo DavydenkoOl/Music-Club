@@ -1,4 +1,5 @@
-﻿@model IndexModel
+﻿@using Humanizer.Localisation
+@model IndexModel
 
 @{
     ViewData["Title"] = "Index";
@@ -18,25 +19,25 @@
             <a asp-action="CreateGenre" asp-controller="Genre" style="text-decoration: none;">
                 <div id="add_genre" style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
                     <img src="/image/add-genre.png" />
-                    <h5 style="color:azure;margin-left:8px">Добавить жанр</h5>
+                    <h5 style="color:azure;margin-left:8px">@Music_Club.Resources.Resource.Add_genre</h5>
                 </div>
             </a>
             <a asp-action="Users" asp-controller="Account" style="text-decoration: none;">
                 <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
                     <img src="/image/users.png" />
-                    <h5 style="color:azure;margin-left:8px">Пользователи</h5>
+                    <h5 style="color:azure;margin-left:8px">@Music_Club.Resources.Resource.Users</h5>
                 </div>
             </a>
             <a asp-action="Create" asp-controller="MusicClips" style="text-decoration: none;">
                 <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
                     <img src="/image/addvideo.png" />
-                    <h5 style="color:azure;margin-left:8px">Добавить клип</h5>
+                    <h5 style="color:azure;margin-left:8px">@Music_Club.Resources.Resource.Add_clip</h5>
                 </div>
             </a>
             <a id="del_clip_a" style="text-decoration: none;cursor:pointer">
                 <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
                     <img src="/image/remove.png" />
-                    <h5 style="color:azure;margin-left:8px">Удалить клип</h5>
+                    <h5 style="color:azure;margin-left:8px">@Music_Club.Resources.Resource.Del_clip</h5>
                 </div>
             </a>
         }
@@ -45,13 +46,13 @@
             <a asp-action="Create" asp-controller="MusicClips" style="text-decoration: none;">
                 <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
                     <img src="/image/addvideo.png" />
-                    <h5 style="color:azure;margin-left:8px">Добавить клип</h5>
+                    <h5 style="color:azure;margin-left:8px">@Music_Club.Resources.Resource.Add_clip</h5>
                 </div>
             </a>
             <a id="del_clip_a" style="text-decoration: none;cursor:pointer">
                 <div style="display:flex;width:70%; height:30px; margin:10px 0 20px 20px">
                     <img src="/image/remove.png" />
-                    <h5 style="color:azure;margin-left:8px">Удалить клип</h5>
+                    <h5 style="color:azure;margin-left:8px">@Music_Club.Resources.Resource.Del_clip</h5>
                 </div>
             </a>
         }

@@ -28,10 +28,9 @@ namespace Music_Club.Controllers
         }
 
         // GET: MusicClips
-        public async Task<IActionResult> Index(string? searchClip, string? filterArtist, string? filterGenre, 
-           SortState sortState, int page = 1)
-        { 
-
+        public async Task<IActionResult> Index(string? searchClip, string? filterArtist, string? filterGenre,SortState sortState, int page = 1)
+        {
+            HttpContext.Session.SetString("path", Request.Path);
             var model = new IndexModel();
             int sizePage = 12;
 
@@ -59,12 +58,13 @@ namespace Music_Club.Controllers
 
             return View(model);
         }
+        [HttpPost]
         public ActionResult ChangeCulture(string lang)
         {
-            string? returnUrl = HttpContext.Session.GetString("path") ?? "/Club/Index";
+            string? returnUrl = HttpContext.Session.GetString("path") ?? "/MusicClips/Index";
 
             // Список культур
-            List<string> cultures = new List<string>() { "ru", "en", "uk", "de", "fr" };
+            List<string> cultures = new List<string>() { "ru", "en", "ua" };
             if (!cultures.Contains(lang))
             {
                 lang = "ru";
@@ -159,21 +159,7 @@ namespace Music_Club.Controllers
             return RedirectToAction("Create", "MusicClips", musicClip);
         }
 
-        // GET: MusicClips/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var musicClip = await _context.Clips.FindAsync(id);
-        //    if (musicClip == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(musicClip);
-        //}
+       
 
         // POST: MusicClips/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -210,7 +196,7 @@ namespace Music_Club.Controllers
         //    return View(musicClip);
         //}
 
-       
+
         public async Task<IActionResult> Delete(int? id)
         {
             var musicClip = await _context.GetObject(id);

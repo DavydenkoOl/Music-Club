@@ -22,7 +22,7 @@ namespace Music_Club.Filters
                 cultureName = "ru";
 
             // Список культур
-            List<string> cultures = new List<string>() { "ru", "en", "uk" };
+            List<string> cultures = new List<string>() { "ru", "en", "ua" };
             if (!cultures.Contains(cultureName))
             {
                 cultureName = "ru";

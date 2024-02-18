@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Music_Club.Models;
 using Music_Club.Repository;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +18,15 @@ string? connection = builder.Configuration.GetConnectionString("DefaultConnectio
 // добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<MusicClubContext>(options => options.UseSqlServer(connection));
 
+// Добавляем сервисы MVC
+builder.Services.AddControllersWithViews();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10); // Длительность сеанса (тайм-аут завершения сеанса)
+    options.Cookie.Name = "Session"; // Каждая сессия имеет свой идентификатор, который сохраняется в куках.
+
+});
 // Добавляем сервисы MVC
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IRepository<Users>, UserRepository>();
