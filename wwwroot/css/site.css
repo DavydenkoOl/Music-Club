@@ -42,6 +42,11 @@ body {
     z-index: -1000;
     transform: scaleY(1.35);
 }
+
+#search_clip{
+    
+}
+
 .search-field {
     width: 100%;
     padding: 10px;
@@ -115,4 +120,93 @@ body {
         
         box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
     }
+}
+
+#wrapperBox {
+    width: 100%;
+    height: 82vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    overflow: auto;
+}
+
+#rowWrapper{
+    display: flex;
+}
+
+.activeClass {
+    display: none;
+}
+
+.clipsBody {
+    flex-basis: 25%;
+    height: 180px;
+    margin: 0px;
+}
+
+.clipsBody div{
+    position: relative;
+    border: 1px solid white;
+    border-radius: 8px;
+    margin: 10px;
+    overflow: hidden;
+    padding-block: auto;
+}
+
+.clipsBody h6{
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    color: white;
+}
+
+.clipsBody div video{
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    object-fit: cover;
+}
+
+
+#helpBtns {
+    display: flex;
+    justify-content: end;
+    margin-top: 5px;
+}
+
+
+#helpBtns form button{
+    background: transparent;
+    border: 0px;
+    margin-inline: 5px;
+    transition: 0.2s;
+}
+
+#helpBtns form button:hover{
+    background: #464545;
+    border-radius: 15px;
+    transition: 0.2s;
+}
+
+#helpBtns form button img {
+    width: 40px;
+    height: 40px;
+}
+
+#helpBtns a {
+    margin-right: 15px;
+}
+
+#helpBtns a img {
+    width: 35px;
+    height: 35px;
+    padding: 3px;
+    transition: 0.2s;
+}
+
+#helpBtns a img:hover {
+    background: #464545;
+    border-radius: 10px;
+    transition: 0.2s;
 }

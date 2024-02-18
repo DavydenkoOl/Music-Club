@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Music_Club.Filters;
 using Music_Club.Models;
 using Music_Club.Repository;
 
 namespace Music_Club.Controllers
 {
+    [Culture]
     public class MusicClipsController : Controller
     {
         IRepository<MusicClip> _context;
@@ -24,28 +28,53 @@ namespace Music_Club.Controllers
         }
 
         // GET: MusicClips
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.GetList());
+        public async Task<IActionResult> Index(string? searchClip, string? filterArtist, string? filterGenre, 
+           SortState sortState, int page = 1)
+        { 
+
+            var model = new IndexModel();
+            int sizePage = 12;
+
+            model.sortViewModel = new SortViewModel(sortState);
+            model.musicClips = await _context.GetList();
+            model.filterViewModel = new FilterViewModel(filterArtist, filterGenre, searchClip);
+            if (searchClip != null)
+                model.musicClips = model.musicClips.Where(c => c.Title.ToLower().Contains(searchClip.ToLower())).ToList();
+            if (filterArtist != null)
+                model.musicClips = model.musicClips.Where(c => c.Artist.ToLower().Contains(filterArtist.ToLower())).ToList();
+            if (filterGenre != null)
+                model.musicClips = model.musicClips.Where(c => c.Genre.ToLower().Contains(filterGenre.ToLower())).ToList();
+
+            model.musicClips = sortState switch
+            {
+                SortState.TitleDesc => model.musicClips.OrderByDescending(s => s.Title).ToList(),
+                _ => model.musicClips.OrderBy(s => s.Title).ToList(),
+            };
+
+
+            var count = model.musicClips.Count();
+            model.musicClips = model.musicClips.Skip((page - 1) * sizePage).Take(sizePage).ToList();
+            model.pageViewModel = new PageViewModel(count, page, sizePage);
+
+
+            return View(model);
         }
+        public ActionResult ChangeCulture(string lang)
+        {
+            string? returnUrl = HttpContext.Session.GetString("path") ?? "/Club/Index";
 
-        // GET: MusicClips/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+            // Список культур
+            List<string> cultures = new List<string>() { "ru", "en", "uk", "de", "fr" };
+            if (!cultures.Contains(lang))
+            {
+                lang = "ru";
+            }
 
-        //    //var musicClip = await _context.Clips
-        //    //    .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (musicClip == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(musicClip);
-        //}
+            CookieOptions option = new CookieOptions();
+            option.Expires = DateTime.Now.AddDays(10); // срок хранения куки - 10 дней
+            Response.Cookies.Append("lang", lang, option); // создание куки
+            return Redirect(returnUrl);
+        }
 
         // GET: MusicClips/Create
         public async Task< IActionResult> Create()
@@ -54,6 +83,7 @@ namespace Music_Club.Controllers
             model.GenreList = await _context_genre.GetList();
             return View(model);
         }
+
         public async Task<IActionResult> SelectedVideo(int id)
         {
             CookieOptions option = new CookieOptions();
@@ -83,7 +113,15 @@ namespace Music_Club.Controllers
             Response.Cookies.Append("Selected_video", id.ToString(), option);
             Response.Cookies.Append("previous_video", previous_video.ToString(), option);
             Response.Cookies.Append("next_video", next_video.ToString(), option);
-            return RedirectToAction("Index",await _context.GetList());
+            var model = new IndexModel
+            {
+                activeClip = _context.GetList().Result.Where(m => m.Id == id).FirstOrDefault(),
+                musicClips = await CreateRecommendation.createRecomendation(await _context.GetList(), 5),
+                filterViewModel = new FilterViewModel(null, null, null),
+                pageViewModel = new PageViewModel(0, 0, 0),
+                sortViewModel = new SortViewModel(SortState.TitleAsc)
+            };
+            return View("/Views/MusicClips/Index.cshtml", model);
         }
         // POST: MusicClips/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
