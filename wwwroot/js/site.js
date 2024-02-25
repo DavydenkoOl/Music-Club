@@ -66,7 +66,15 @@ delClip.onclick = () => {
     delete_clip.style.display = "block";
 }
 let div_btn_del = document.getElementById("div_btn_del");
-div_btn_del.onclick = () => {
-    delete_clip.style.display = "none";
+if (div_btn_del !== null) {
+    div_btn_del.onclick = () => {
+        delete_clip.style.display = "none";
+    }
 }
 
+let notification = document.getElementById("notification");
+if (notification !== null) {
+    closeNotification.onclick = () => {
+        notification.classList.add("activeClass");
+    }
+}

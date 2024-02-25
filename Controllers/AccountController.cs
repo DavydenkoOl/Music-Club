@@ -47,6 +47,8 @@ namespace Music_Club.Controllers
 
         {
             Response.Cookies.Delete("Login");
+            Response.Cookies.Delete("FirstName");
+            Response.Cookies.Delete("LastName");
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
@@ -120,7 +122,7 @@ namespace Music_Club.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegistratModel reg)
+        public async Task<IActionResult> Register(RegistratModel reg)
         {
             if (ModelState.IsValid)
             {
@@ -155,8 +157,8 @@ namespace Music_Club.Controllers
 
                 user.Password = hash.ToString();
                 user.Salt = salt;
-                _repository.Create(user);
-                _repository.Save();
+               await _repository.Create(user);
+               await _repository.Save();
                 return RedirectToAction("Login");
             }
 

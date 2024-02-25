@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Music_Club.Models;
+using Music_Club.Notifications;
 using Music_Club.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSignalR();
 
 builder.Services.AddDistributedMemoryCache();// добавляем IDistributedMemoryCache
 builder.Services.AddSession();  // Добавляем сервисы сессии
@@ -37,5 +39,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=MusicClips}/{action=Index}/{id?}");
+
+app.MapHub<NotificationHub>("/notification");
 
 app.Run();
