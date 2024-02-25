@@ -135,6 +135,12 @@
   <data name="Descrip_clip" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Log_on" xml:space="preserve">
+    <value>Log on</value>
+  </data>
   <data name="Name_clip" xml:space="preserve">
     <value>Clip Name</value>
   </data>

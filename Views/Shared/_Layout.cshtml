@@ -1,12 +1,12 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Music_Club</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Music_Club.styles.css" asp-append-version="true" />
+   @*  <link rel="stylesheet" href="~/Music_Club.styles.css" asp-append-version="true" /> *@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Salsa&display=swap" rel="stylesheet">
@@ -68,7 +68,33 @@
         </main>
     </div>
 
-   
+       <script>
+           $(document).ready(function () {
+               var selectElement = document.querySelector('select[name="lang"]');
+
+               // Добавляем обработчик события изменения значения выпадающего списка
+                   selectElement.addEventListener('change', function () {
+                   // Получаем выбранное значение
+                   var selectedValue = selectElement.value;
+
+                       console.log(selectedValue);
+
+                   $.ajax({
+                       url: 'https://localhost:7074/MusicClips/ChangeCulture',
+                       method: 'POST',
+                       data: { lang: selectedValue },
+                       success: function (response) {
+                           location.reload();
+                       },
+                       error: function (xhr, status, error) {
+                           // Обработка ошибки запроса
+                       }
+                   });
+
+               });
+           });
+       </script>
+
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
